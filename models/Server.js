@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const { dbConnection } = require('../database/config');
 
 
@@ -8,7 +9,7 @@ class Server {
     constructor() {
         this.app = express();
         this.port = process.env.PORT;
-        this.path = {
+        this.pathApp = {
             auth: '/api/auth',
             events: '/api/events'
         }
@@ -32,8 +33,13 @@ class Server {
     }
 
     routes() {
-        this.app.use(this.path.auth, require('../routes/auth'));
-        this.app.use(this.path.events, require('../routes/events'));
+        this.app.use(this.pathApp.auth, require('../routes/auth'));
+        this.app.use(this.pathApp.events, require('../routes/events'));
+
+        //exception
+        this.app.get('/*', (_req, res) => {
+            res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
+        });
     }
 
     listen() {
